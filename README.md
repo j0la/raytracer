@@ -1,0 +1,1 @@
+`raytracer` is a basic ray tracing engine implementing the Blinn-Phong reflection model.
