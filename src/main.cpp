@@ -12,5 +12,6 @@ int main(int argc, char *argv[]) {
     string ipath = argv[1];
     string opath = ipath.substr(0, ipath.find_last_of('.')) + ".ppm";
 
-    load_scene(ipath);
+    Scene scene;
+    load_scene(scene, ipath);
 }
