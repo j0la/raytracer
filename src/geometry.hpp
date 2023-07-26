@@ -3,6 +3,8 @@
 
 #include "graphics.hpp"
 
+extern const double pi;
+
 struct Vector {
     float x, y, z;
 };

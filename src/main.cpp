@@ -14,4 +14,5 @@ int main(int argc, char *argv[]) {
 
     Scene scene;
     load_scene(scene, ipath);
+    define_view(scene);
 }

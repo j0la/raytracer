@@ -1,6 +1,8 @@
 #include <cmath>
 #include "geometry.hpp"
 
+const double pi = std::acos(-1);
+
 float v_length(const Vector& v) {
     return sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
 }

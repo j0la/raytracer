@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #include "scene.hpp"
 
 using namespace std;
@@ -72,4 +73,23 @@ void load_scene(Scene& scene, std::string path) {
     }
 
     fs.close();
+}
+
+void define_view(Scene& scene) {
+    // unit view direction
+    Vector n = v_norm(scene.view_dir);
+    // axes
+    Vector u = v_norm(v_cross(scene.view_dir, scene.up_dir)); // horizontal
+    Vector v = v_norm(v_cross(u, scene.view_dir)); // vertical
+    Vector w = n * -1;
+    // dimensions
+    float aspect_ratio = (float)scene.img_w / (float)scene.img_h;
+    float view_d = 10; // arbitrary distance from eye, dimensions scale proportionally regardless of value
+    float view_w = 2 * view_d * tan(0.5 * scene.fov_h * (pi / 180));
+    float view_h = view_w / aspect_ratio;
+    // corners
+    scene.view.ul = scene.eye_pos + n * view_d - u * (view_w  / 2) + v * (view_h / 2);
+    scene.view.ur = scene.eye_pos + n * view_d + u * (view_w  / 2) + v * (view_h / 2);
+    scene.view.ll = scene.eye_pos + n * view_d - u * (view_w  / 2) - v * (view_h / 2);
+    scene.view.lr = scene.eye_pos + n * view_d + u * (view_w  / 2) - v * (view_h / 2);
 }
