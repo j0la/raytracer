@@ -1,5 +1,7 @@
 #include <iostream>
 #include "scene.hpp"
+#include "graphics.hpp"
+#include "render.hpp"
 
 using namespace std;
 
@@ -15,4 +17,9 @@ int main(int argc, char *argv[]) {
     Scene scene;
     load_scene(scene, ipath);
     define_view(scene);
+
+    std::vector<std::vector<Color>> pixels(scene.img_w, std::vector<Color>(scene.img_h));
+
+    render(scene, pixels);
+    write_ppm(pixels, opath);
 }

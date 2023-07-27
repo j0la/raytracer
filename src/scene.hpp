@@ -14,7 +14,7 @@ struct View {
 struct Scene {
     Vector eye_pos, up_dir, view_dir;
     float fov_h;
-    float img_w, img_h;
+    int img_w, img_h;
     View view;
     Color bkg_color;
     std::vector<Material> materials;
