@@ -5,6 +5,7 @@
 #include "scene.hpp"
 
 void render(Scene& scene, std::vector<std::vector<Color>>& pixels);
+Color cast_ray(Scene& scene, Ray& ray);
 void write_ppm(std::vector<std::vector<Color>>& pixels, std::string path);
 
 #endif
