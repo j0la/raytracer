@@ -17,7 +17,7 @@ struct Ray {
 struct Sphere {
     Vector origin;
     float radius;
-    Material& material;
+    size_t m; // scene materials index
 };
 
 struct PointLight {
@@ -47,5 +47,8 @@ Vector operator-(const Vector& v1, const Vector& v2);
 // RETURNS: v scaled by s
 Vector operator*(const Vector& v, float s);
 Vector operator/(const Vector& v, float s);
+
+// RETURNS: distance t along ray of intersection, -1 if miss
+float intersect(Ray& ray, Sphere& sphere);
 
 #endif

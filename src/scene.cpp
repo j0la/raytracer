@@ -6,8 +6,6 @@
 #include "scene.hpp"
 
 void load_scene(Scene& scene, std::string path) {
-    std::cout << "Loading \"" << path << "\"..." << std::endl;
-
     std::ifstream fs;
     fs.open(path);
     if (!fs.is_open()) {
@@ -60,7 +58,7 @@ void load_scene(Scene& scene, std::string path) {
             scene.materials.push_back(m);
         } else if (token == "sphere") {
             // sphere x y z r
-            Sphere s { .material = scene.materials.back() };
+            Sphere s { .m = scene.materials.size() - 1 };
             ss >> s.origin.x >> s.origin.y >> s.origin.z >> s.radius;
             scene.spheres.push_back(s);
         } else if (token == "pointlight") {

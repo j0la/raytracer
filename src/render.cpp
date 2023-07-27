@@ -1,10 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "render.hpp"
 
 void render(Scene& scene, std::vector<std::vector<Color>>& pixels) {
-    std::cout << "Rendering..." << std::endl;
-
     size_t cols = pixels.size();
     size_t rows = pixels.front().size();
 
@@ -26,12 +25,30 @@ void render(Scene& scene, std::vector<std::vector<Color>>& pixels) {
 }
 
 Color cast_ray(Scene& scene, Ray& ray) {
-    return scene.bkg_color;
+    // intersection displacement along ray & material index
+    float t = -1;
+    size_t m = -1;
+
+    for (Sphere& s : scene.spheres) {
+        float x = intersect(ray, s);
+        if (x > 0 && (t < 0 || x < t)) {
+            // either the first intersection or the nearest
+            t = x;
+            m = s.m;
+        }
+    }
+
+    // no intersection
+    if (t <= 0) return scene.bkg_color;
+
+    // intersection found
+    Vector ipt = ray.origin + ray.dir * t;
+    Material& material = scene.materials.at(m);
+
+    return material.od;
 }
 
 void write_ppm(std::vector<std::vector<Color>>& pixels, std::string path) {
-    std::cout << "Writing to \"" << path << "\"..." << std::endl;
-
     std::ofstream fs;
     fs.open(path);
     if (!fs.is_open()) {
