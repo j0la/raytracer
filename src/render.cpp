@@ -25,16 +25,18 @@ void render(Scene& scene, std::vector<std::vector<Color>>& pixels) {
 }
 
 Color cast_ray(Scene& scene, Ray& ray) {
-    // intersection displacement along ray & material index
+    // intersection displacement along ray
     float t = -1;
-    size_t m = -1;
+    // intersected sphere index
+    size_t s = -1;
 
-    for (Sphere& s : scene.spheres) {
-        float x = intersect(ray, s);
+    for (size_t i = 0; i < scene.spheres.size(); i++) {
+        Sphere& sphere = scene.spheres[i];
+        float x = intersect(ray, sphere);
         if (x > 0 && (t < 0 || x < t)) {
             // either the first intersection or the nearest
             t = x;
-            m = s.m;
+            s = i;
         }
     }
 
@@ -43,9 +45,32 @@ Color cast_ray(Scene& scene, Ray& ray) {
 
     // intersection found
     Vector ipt = ray.origin + ray.dir * t;
-    Material& material = scene.materials.at(m);
+    Sphere& sphere = scene.spheres.at(s);
+    Material& material = scene.materials.at(sphere.m);
 
-    return material.od;
+    // surface normal at intersection
+    Vector N = v_norm((ipt - sphere.origin) / sphere.radius);
+
+    // direction to eye / ray origin
+    Vector V = v_norm(ray.dir * -1);
+
+    Color energy = material.od * material.ka;
+
+    for (PointLight& light : scene.point_lights) {
+        // distance & direction to light
+        Vector L = v_norm(light.origin - ipt);
+        float light_d = v_length(light.origin - ipt);
+
+        // halfway between ray & light
+        Vector H = v_norm(L + V);
+
+        Color diffuse = material.od * material.kd * std::max(N * L, 0.0f);
+        Color specular = material.os * material.ks * std::pow(std::max(N * H, 0.0f), material.n);
+        energy = energy + light.color * (diffuse + specular);
+        energy = clamp(energy, 0, 1);
+    }
+
+    return energy;
 }
 
 void write_ppm(std::vector<std::vector<Color>>& pixels, std::string path) {
