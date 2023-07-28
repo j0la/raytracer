@@ -64,9 +64,21 @@ Color cast_ray(Scene& scene, Ray& ray) {
         // halfway between ray & light
         Vector H = v_norm(L + V);
 
+        // spawn shadow ray
+        int shadow = 1;
+        Ray shadow_ray = { .origin = ipt, .dir = L };
+        for (Sphere& sphere : scene.spheres) {
+            float t = intersect(shadow_ray, sphere);
+            // check for intersection between surface & light
+            // offset to avoid self-intersection
+            if (t > 0.1 && t < light_d) {
+                shadow = 0;
+            }
+        }
+
         Color diffuse = material.od * material.kd * std::max(N * L, 0.0f);
         Color specular = material.os * material.ks * std::pow(std::max(N * H, 0.0f), material.n);
-        energy = energy + light.color * (diffuse + specular);
+        energy = energy + light.color * shadow * (diffuse + specular);
         energy = clamp(energy, 0, 1);
     }
 
