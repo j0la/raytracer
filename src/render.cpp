@@ -19,12 +19,12 @@ void render(Scene& scene, std::vector<std::vector<Color>>& pixels) {
                 .origin = scene.eye_pos,
                 .dir = v_norm(pixel_center - scene.eye_pos)
             };
-            pixels[i][j] = cast_ray(scene, ray);
+            pixels[i][j] = cast_ray(scene, ray, 1);
         }
     }
 }
 
-Color cast_ray(Scene& scene, Ray& ray) {
+Color cast_ray(Scene& scene, Ray& ray, int depth) {
     // intersection displacement along ray
     float t = -1;
     // intersected sphere index
@@ -33,7 +33,7 @@ Color cast_ray(Scene& scene, Ray& ray) {
     for (size_t i = 0; i < scene.spheres.size(); i++) {
         Sphere& sphere = scene.spheres[i];
         float x = intersect(ray, sphere);
-        if (x > 0 && (t < 0 || x < t)) {
+        if (x > MIN_IXN_DISTANCE && (t < 0 || x < t)) {
             // either the first intersection or the nearest
             t = x;
             s = i;
@@ -70,8 +70,7 @@ Color cast_ray(Scene& scene, Ray& ray) {
         for (Sphere& sphere : scene.spheres) {
             float t = intersect(shadow_ray, sphere);
             // check for intersection between surface & light
-            // offset to avoid self-intersection
-            if (t > 0.1 && t < light_d) {
+            if (t > MIN_IXN_DISTANCE && t < light_d) {
                 shadow = 0;
             }
         }
@@ -79,6 +78,22 @@ Color cast_ray(Scene& scene, Ray& ray) {
         Color diffuse = material.od * material.kd * std::max(N * L, 0.0f);
         Color specular = material.os * material.ks * std::pow(std::max(N * H, 0.0f), material.n);
         energy = energy + light.color * shadow * (diffuse + specular);
+        energy = clamp(energy, 0, 1);
+    }
+
+    if (depth >= MAX_RAY_DEPTH) return energy;
+
+    // cast reflection ray
+    if (material.ks > 0) {
+        // material fresnel reflectance
+        float f0 = std::pow((material.n - 1) / (material.n + 1), 2);
+        float fr = f0 + (1 - f0) * std::pow(1 - (V * N), 5);
+
+        Ray R = {
+            .origin = ipt,
+            .dir = v_norm(N * 2 * (N * V) - V)
+        };
+        energy = energy + cast_ray(scene, R, depth + 1) * fr;
         energy = clamp(energy, 0, 1);
     }
 
