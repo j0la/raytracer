@@ -77,7 +77,7 @@ Color cast_ray(Scene& scene, Ray& ray, float ni, int depth) {
         }
 
         Color diffuse = material.od * material.kd * std::max(N * L, 0.0f);
-        Color specular = material.os * material.ks * std::pow(std::max(N * H, 0.0f), material.n);
+        Color specular = material.os * material.ks * std::pow(std::max(N * H, 0.0f), material.f);
         energy = energy + light.color * shadow * (diffuse + specular);
         energy = clamp(energy, 0, 1);
     }

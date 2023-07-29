@@ -8,9 +8,9 @@ struct Color {
 struct Material {
     Color od, os; // diffuse and specular color
     float ka, kd, ks; // ambient, diffuse, specular reflectivity [0, 1]
-    float n; // specular falloff
+    float f; // specular falloff
     float a; // opacity [0, 1]
-    float i; // refractive index
+    float n; // refractive index
 };
 
 // RETURNS: color scaled by s

@@ -54,7 +54,7 @@ void load_scene(Scene& scene, std::string path) {
             // α: opacity [0, 1]
             // η: refractive index
             Material m;
-            ss >> m.od.r >> m.od.g >> m.od.b >> m.os.r >> m.os.g >> m.os.b >> m.ka >> m.kd >> m.ks >> m.n >> m.a >> m.i;
+            ss >> m.od.r >> m.od.g >> m.od.b >> m.os.r >> m.os.g >> m.os.b >> m.ka >> m.kd >> m.ks >> m.f >> m.a >> m.n;
             scene.materials.push_back(m);
         } else if (token == "sphere") {
             // sphere x y z r
