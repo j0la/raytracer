@@ -68,6 +68,7 @@ Color cast_ray(Scene& scene, Ray& ray, float ni, int depth) {
         // spawn shadow ray
         float shadow = 1;
         Ray shadow_ray = { .origin = ipt, .dir = L };
+        shadow_ray.origin = shadow_ray.origin + shadow_ray.dir;
         for (Sphere& sphere : scene.spheres) {
             float t = intersect(shadow_ray, sphere);
             // check for intersection between surface & light
@@ -96,6 +97,8 @@ Color cast_ray(Scene& scene, Ray& ray, float ni, int depth) {
             .origin = ipt,
             .dir = v_norm(N * 2 * cos_i - V)
         };
+        R.origin = R.origin + R.dir;
+
         energy = energy + cast_ray(scene, R, ni, depth + 1) * fr;
         energy = clamp(energy, 0, 1);
     }
